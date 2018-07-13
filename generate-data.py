@@ -63,12 +63,12 @@ class XoomData(object):
         fraud_lat, fraud_long = self.randLatLong(majorcities.lat_long[40:50])
         return [self.randList(self.payment_types),
                 self.disbursement_types[1],
-                self.recipient_countries[11],
+                self.recipient_countries[6],
                 self.randCurrency(1000, 10000),
                 self.randList(self.applications),
                 fraud_lat,
                 fraud_long,
-                self.weightedRandList(self.fraud_types, [5, 0, 10]),
+                self.weightedRandList(self.fraud_types, [5, 1, 10]),
                 ]
 
     def fraudTrendUPS(self):
@@ -99,16 +99,16 @@ def genCircle(midpoint=(0.0, 0.0), radius=1.0, step_in_radians=math.pi / 180):
 
 
 def main():
-    sample_number = 100000
+    sample_number = 1000000
     with open('gwc-risk-dataset.csv', 'w') as of:
         of.write(','.join(xoom_data.header) + '\n')
         for i in range(1, sample_number + 1):
-            randn = random.randrange(0, 1000)
-            if randn >= 999:
+            randn = random.randrange(0, 10000)
+            if randn >= 9999:
                 of.write(','.join([str(x) for x in [i] + xoom_data.fraudTrendMap1()]) + '\n')
-            elif randn >= 900:
+            elif randn >= 9000:
                 of.write(','.join([str(x) for x in [i] + xoom_data.fraudTrendMap2()]) + '\n')
-            elif randn >= 800:
+            elif randn >= 8000:
                 of.write(','.join([str(x) for x in [i] + xoom_data.fraudTrendUPS()]) + '\n')
             else:
                 of.write(','.join([str(x) for x in [i] + xoom_data.goodTxn()]) + '\n')
