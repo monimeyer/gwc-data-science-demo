@@ -34,48 +34,52 @@ class XoomData(object):
         lat, lng = self.randList(li)
         return (lat, lng)
 
+    def weightedRandLatLong(self, li):
+        lat, lng = self.weightedRandList(li, [random.randrange(0, 150) for latlong in li])
+        return (lat, lng)
+
     def goodTxn(self):
         rand_lat, rand_long = self.randLatLong(majorcities.lat_long)
         randn = random.randrange(0, 1000)
         fraud_type = 'None' if randn < 990 else self.weightedRandList(self.fraud_types, [5, 2, 4])
-        return [self.randList(self.payment_types),
-                self.randList(self.disbursement_types),
-                self.randList(self.recipient_countries),
+        return [self.weightedRandList(self.payment_types, [16, 21]),
+                self.weightedRandList(self.disbursement_types, [19, 13, 5, 9]),
+                self.weightedRandList(self.recipient_countries, [random.randrange(0, 30) for country in self.recipient_countries]),
                 self.randCurrency(),
-                self.randList(self.applications),
+                self.weightedRandList(self.applications, [5, 8]),
                 rand_lat,
                 rand_long,
                 fraud_type]
 
     def fraudTrendMap1(self):
         fraud_lat, fraud_long = self.circle_generator.next()
-        return [self.randList(self.payment_types),
+        return [self.weightedRandList(self.payment_types, [23, 19]),
                 self.disbursement_types[1],
                 self.recipient_countries[42],
                 self.randCurrency(100, 1000),
-                self.randList(self.applications),
+                self.weightedRandList(self.applications, [11, 4]),
                 fraud_lat,
                 fraud_long,
-                self.randList(self.fraud_types),
+                self.weightedRandList(self.fraud_types, [5, 2, 13]),
                 ]
 
     def fraudTrendMap2(self):
-        fraud_lat, fraud_long = self.randLatLong(majorcities.lat_long[40:50])
-        return [self.randList(self.payment_types),
+        fraud_lat, fraud_long = self.weightedRandLatLong(majorcities.lat_long[40:50])
+        return [self.weightedRandList(self.payment_types, [21, 16]),
                 self.disbursement_types[1],
                 self.recipient_countries[6],
                 self.randCurrency(1000, 10000),
-                self.randList(self.applications),
+                self.weightedRandList(self.applications, [15, 13]),
                 fraud_lat,
                 fraud_long,
                 self.weightedRandList(self.fraud_types, [5, 1, 10]),
                 ]
 
     def fraudTrendUPS(self):
-        fraud_lat, fraud_long = self.randLatLong(majorcities.lat_long)
+        fraud_lat, fraud_long = self.weightedRandLatLong(majorcities.lat_long)
         return[self.payment_types[0],
                self.disbursement_types[3],
-               self.randList(self.recipient_countries),
+               self.weightedRandList(self.recipient_countries, [random.randrange(0, 20) for country in self.recipient_countries]),
                self.randCurrency(1, 100),
                self.applications[0],
                fraud_lat,
@@ -99,7 +103,7 @@ def genCircle(midpoint=(0.0, 0.0), radius=1.0, step_in_radians=math.pi / 180):
 
 
 def main():
-    sample_number = 1000000
+    sample_number = 100000
     with open('gwc-risk-dataset.csv', 'w') as of:
         of.write(','.join(xoom_data.header) + '\n')
         for i in range(1, sample_number + 1):
@@ -112,6 +116,8 @@ def main():
                 of.write(','.join([str(x) for x in [i] + xoom_data.fraudTrendUPS()]) + '\n')
             else:
                 of.write(','.join([str(x) for x in [i] + xoom_data.goodTxn()]) + '\n')
+            if i % 1000 == 0:
+                print i
 
     pass
 
